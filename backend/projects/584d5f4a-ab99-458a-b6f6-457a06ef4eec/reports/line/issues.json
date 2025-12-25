@@ -1,0 +1,211 @@
+[
+  {
+    "id": 1,
+    "stage": "line",
+    "severity": "major",
+    "category": "voice",
+    "location": "Chapter 2, Scene 3",
+    "original_text": "The ground vibrated beneath his worn-out shoes, a constant tremor from the city's relentless pulse.",
+    "description": "Inconsistent narrative voice and character identity. The story establishes Wilbur as a pig with trotters/hooves, but here the voice shifts to describing him as a human with shoes.",
+    "suggestion": "Replace 'worn-out shoes' with 'small hooves' or 'trotters' to maintain the established animal-protagonist voice.",
+    "bible_conflict": false
+  },
+  {
+    "id": 2,
+    "stage": "line",
+    "severity": "critical",
+    "category": "voice",
+    "location": "Chapter 2, Scene 4",
+    "original_text": "No one noticed the scrawny kid trying to disappear into the shadows.",
+    "description": "Complete break in authorial voice and POV. The narrative voice abandons the 'sentient pig' premise entirely, referring to the protagonist as a 'kid' (human), which contradicts the core premise of the 'Pig Prodigy.'",
+    "suggestion": "Rewrite this section to emphasize Wilbur's pig-like nature in an urban environment (e.g., 'the small pink figure' or 'the stray pig').",
+    "bible_conflict": false
+  },
+  {
+    "id": 3,
+    "stage": "line",
+    "severity": "major",
+    "category": "voice",
+    "location": "Chapter 3, Scene 1",
+    "original_text": "Pixel perched comfortably on his head, a tiny voice buzzing in his ear. ... her antennae twitching.",
+    "description": "Inconsistent character voice and description. In Chapter 2, Scene 6, Pixel is explicitly described as a 'cat, lean and wiry.' Here, the voice shifts to describing Pixel as an insect with antennae.",
+    "suggestion": "Decide on Pixel's species and maintain consistent physical descriptions. If Pixel is a cat, replace 'antennae' and 'buzzing' with feline traits like 'whiskers' and 'purring.'",
+    "bible_conflict": false
+  },
+  {
+    "id": 4,
+    "stage": "line",
+    "severity": "minor",
+    "category": "voice",
+    "location": "Chapter 2, Scene 6",
+    "original_text": "The air thrummed with a tension Wilbur could almost taste \u2013 metallic, like the smell of blood.",
+    "description": "Jarring tone shift. The manuscript generally maintains a whimsical, YA fable tone. Introducing the 'smell of blood' in a scene about a public chess park feels unnecessarily gritty and out of sync with the established atmosphere.",
+    "suggestion": "Change the sensory detail to something more aligned with the setting, such as the 'scent of old wood' or 'the sharp tang of ozone.'",
+    "bible_conflict": false
+  },
+  {
+    "id": 5,
+    "stage": "line",
+    "severity": "minor",
+    "category": "voice",
+    "location": "Chapter 1, Scene 3",
+    "original_text": "He needed a distraction... and a shovel.",
+    "description": "Tone inconsistency regarding the 'rules' of the world. The story starts as a grounded animal fable, but a pig planning to use a shovel shifts the tone toward a cartoonish/slapstick voice that isn't supported by the earlier, more poetic descriptions.",
+    "suggestion": "Change the escape method to something a pig could realistically achieve, such as rooting under a fence or using his snout to lift a latch.",
+    "bible_conflict": false
+  },
+  {
+    "id": 6,
+    "stage": "line",
+    "severity": "minor",
+    "category": "voice",
+    "location": "Chapter 3, Scene 6",
+    "original_text": "Pixel buzzed nervously atop Wilbur's head, tiny sparks occasionally flickering around her antennae.",
+    "description": "Inconsistent narrative voice regarding the genre. The story shifts from a standard animal fable to a magical realism/sci-fi tone with the introduction of 'sparks' and 'antennae' without prior setup.",
+    "suggestion": "If Pixel has magical properties, introduce them earlier. Otherwise, remove the 'sparks' to keep the tone consistent with the rest of the manuscript.",
+    "bible_conflict": false
+  },
+  {
+    "id": 7,
+    "stage": "line",
+    "severity": "major",
+    "category": "voice",
+    "location": "Paragraphs 6 and 7",
+    "original_text": "Suddenly, a shout echoed through the park. 'That's my pig!' McGregor had spotted... [to] ...Farmer McGregor, brandishing a pitchfork, charged through the crowd, scattering spectators.",
+    "description": "Inconsistent narrative voice and redundancy. The narrative 'stutters' by describing McGregor's entrance and the crowd's reaction twice in two consecutive paragraphs as if the first didn't happen.",
+    "suggestion": "Merge these paragraphs into a single cohesive action. Choose one description of his arrival to maintain narrative momentum.",
+    "bible_conflict": false
+  },
+  {
+    "id": 8,
+    "stage": "line",
+    "severity": "moderate",
+    "category": "voice",
+    "location": "Paragraph 5",
+    "original_text": "With the file open, it exposed a direct path to the King! This gave Wilbur a huge advantage! The crowd went silent as they noticed the opening of the file.",
+    "description": "Tone shift from suspenseful to juvenile. The sudden influx of exclamation marks and 'telling' the reader about the advantage creates a 'Saturday morning cartoon' tone that clashes with the previous dramatic chess descriptions.",
+    "suggestion": "Remove the exclamation marks and show the 'huge advantage' through Boris's reaction or the specific board state rather than stating it directly.",
+    "bible_conflict": false
+  },
+  {
+    "id": 9,
+    "stage": "line",
+    "severity": "minor",
+    "category": "voice",
+    "location": "Paragraph 8",
+    "original_text": "His face was etched with a mixture of disbelief and frustration. The grandmaster had been outmaneuvered by a pig.",
+    "description": "POV slip and shift to an omniscient authorial voice. The narrative moves from Wilbur's internal focus to an external, summary-style commentary on Boris's status.",
+    "suggestion": "Describe Boris's frustration through Wilbur's eyes to maintain third-person limited POV (e.g., 'Wilbur saw the twitch in Boris's jaw').",
+    "bible_conflict": false
+  },
+  {
+    "id": 10,
+    "stage": "line",
+    "severity": "moderate",
+    "category": "voice",
+    "location": "Paragraph 14",
+    "original_text": "Pixel perched almost invisibly on his head.",
+    "description": "Weak/unclear authorial voice and continuity error. This sentence appears after Wilbur has already 'disappeared into the crowd,' making the narrative voice feel disjointed and unedited.",
+    "suggestion": "Delete this sentence. Pixel's position was already established earlier in the scene.",
+    "bible_conflict": false
+  },
+  {
+    "id": 11,
+    "stage": "line",
+    "severity": "minor",
+    "category": "voice",
+    "location": "Paragraph 9",
+    "original_text": "'Pixel, distract him!' Wilbur squealed.",
+    "description": "Inconsistent character voice. It is unclear if Wilbur is physically speaking English or if this is a 'translated' squeal. This creates confusion about the level of anthropomorphism in the story's world.",
+    "suggestion": "Clarify the communication method. If Wilbur cannot speak, use: 'Wilbur let out an urgent squeal that Pixel immediately understood as a command to distract.'",
+    "bible_conflict": false
+  },
+  {
+    "id": 12,
+    "stage": "line",
+    "severity": "minor",
+    "category": "syntax",
+    "location": "Paragraph 1",
+    "original_text": "used, stroking his beard.",
+    "description": "Sentence fragment and unclear syntax; appears to be a typo or missing the subject.",
+    "suggestion": "Boris paused, stroking his beard.",
+    "bible_conflict": false
+  },
+  {
+    "id": 13,
+    "stage": "line",
+    "severity": "minor",
+    "category": "syntax",
+    "location": "Paragraph 2",
+    "original_text": "Boris, seeing a potential advantage, moved in to take the bait, sacrificing his queen.",
+    "description": "Confusing logic; one usually 'takes bait' by accepting a sacrifice, rather than 'sacrificing' their own piece to take it.",
+    "suggestion": "Boris, seeing a potential advantage, moved to capture Wilbur's piece, unaware he was falling for a trap.",
+    "bible_conflict": false
+  },
+  {
+    "id": 14,
+    "stage": "line",
+    "severity": "minor",
+    "category": "syntax",
+    "location": "Paragraph 5",
+    "original_text": "With the file open, it exposed a direct path to the King!",
+    "description": "Clunky syntax with a redundant 'it' following the opening phrase.",
+    "suggestion": "The open file exposed a direct path to the King!",
+    "bible_conflict": false
+  },
+  {
+    "id": 15,
+    "stage": "line",
+    "severity": "minor",
+    "category": "syntax",
+    "location": "Paragraph 5",
+    "original_text": "The crowd went silent as they noticed the opening of the file.",
+    "description": "Repetitive sentence pattern and word choice ('the file' used three times in three sentences).",
+    "suggestion": "A hush fell over the spectators as they realized the gravity of the move.",
+    "bible_conflict": false
+  },
+  {
+    "id": 16,
+    "stage": "line",
+    "severity": "minor",
+    "category": "syntax",
+    "location": "Paragraph 7",
+    "original_text": "The crowd parted before him and McGregor spotted Wilbur due to the commotion surrounding the chess match.",
+    "description": "Clunky transition and repetitive use of 'crowd' from the previous sentence.",
+    "suggestion": "As the spectators scrambled out of his way, the commotion of the match led McGregor's eyes straight to Wilbur.",
+    "bible_conflict": false
+  },
+  {
+    "id": 17,
+    "stage": "line",
+    "severity": "minor",
+    "category": "syntax",
+    "location": "Paragraph 10",
+    "original_text": "Pixel, still on Wilbur's head, emitted a high-pitched screech, disrupting the signal from McGregor's hearing aid, causing feedback.",
+    "description": "Clunky sentence structure with multiple trailing participle phrases ('disrupting', 'causing').",
+    "suggestion": "Pixel, still on Wilbur's head, emitted a high-pitched screech that disrupted McGregor's hearing aid and triggered a wave of painful feedback.",
+    "bible_conflict": false
+  },
+  {
+    "id": 18,
+    "stage": "line",
+    "severity": "minor",
+    "category": "syntax",
+    "location": "Paragraph 14",
+    "original_text": "Pixel perched almost invisibly on his head.",
+    "description": "Confusing placement and non-sequitur; contradicts the previous paragraph stating they had already disappeared into the crowd.",
+    "suggestion": "[Remove this sentence or move it to the description of their escape.]",
+    "bible_conflict": false
+  },
+  {
+    "id": 19,
+    "stage": "line",
+    "severity": "minor",
+    "category": "syntax",
+    "location": "Paragraph 16",
+    "original_text": "McGregor shook his fist and was lost in the distance.",
+    "description": "Weak passive phrasing and clunky transition.",
+    "suggestion": "McGregor shook his fist until the pair vanished into the distance.",
+    "bible_conflict": false
+  }
+]

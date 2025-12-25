@@ -1,0 +1,35 @@
+[
+  {
+    "id": 1,
+    "stage": "copy",
+    "severity": "minor",
+    "category": "house_style",
+    "location": "Chapter 3, Scene 1, paragraph 3",
+    "original_text": "the bishop pinned against the king, the open rook file, the subtle threat lurking behind a seemingly innocuous pawn.",
+    "description": "Oxford comma violation: In a list of three items, the conjunction and comma before the final item are missing.",
+    "suggestion": "Change to: 'the bishop pinned against the king, the open rook file, and the subtle threat lurking behind a seemingly innocuous pawn.'",
+    "bible_conflict": false
+  },
+  {
+    "id": 2,
+    "stage": "copy",
+    "severity": "minor",
+    "category": "house_style",
+    "location": "Paragraph 6",
+    "original_text": "Channel 6 News",
+    "description": "Numbers violation: numbers under 100 should be spelled out.",
+    "suggestion": "Change to: 'Channel Six News'",
+    "bible_conflict": false
+  },
+  {
+    "id": 3,
+    "stage": "copy",
+    "severity": "minor",
+    "category": "house_style",
+    "location": "Paragraph 13",
+    "original_text": "looked from the board to Wilbur to the approaching farmer",
+    "description": "Oxford comma violation: in a list of three or more items, a comma is required before the final conjunction.",
+    "suggestion": "Change to: 'looked from the board, to Wilbur, and to the approaching farmer'",
+    "bible_conflict": false
+  }
+]

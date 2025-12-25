@@ -1,0 +1,345 @@
+﻿"""
+FastAPI endpoints for Series Bible management
+"""
+
+from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
+from typing import Optional
+import json
+from pathlib import Path
+import uuid
+import tempfile
+import os
+
+from core.llm_client import LLMClient
+from core.document_parser import DocumentParser
+from core.models import SeriesBible, Character, Location, TimelineEvent, Object
+from agents.series_bible_manager import SeriesBibleManager
+
+app = FastAPI(title="EditScribe API", version="1.0.0")
+
+# CORS middleware for frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Initialize clients
+llm_client = LLMClient()
+bible_manager = SeriesBibleManager(llm_client)
+
+# Storage (in-memory for now, use database later)
+bibles_storage = {}
+manuscripts_storage = {}
+reviews_storage = {}
+agent_reviews_storage = {}  # NEW: For staged reviews
+
+
+@app.get("/")
+async def root():
+    """Health check"""
+    return {"status": "ok", "service": "EditScribe API"}
+
+
+@app.post("/upload")
+async def upload_manuscript(file: UploadFile = File(...)):
+    """
+    Upload a manuscript file.
+    
+    Returns:
+        manuscript_id: Unique ID for this manuscript
+    """
+    # Generate unique ID
+    manuscript_id = str(uuid.uuid4())
+    
+    # Save file temporarily (Windows-compatible)
+    temp_dir = tempfile.gettempdir()
+    temp_path = os.path.join(temp_dir, f"{manuscript_id}_{file.filename}")
+    
+    try:
+        with open(temp_path, "wb") as f:
+            content = await file.read()
+            f.write(content)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error saving file: {str(e)}")
+    
+    # Parse document
+    try:
+        text = DocumentParser.parse(temp_path)
+        manuscripts_storage[manuscript_id] = text
+        
+        return {
+            "manuscript_id": manuscript_id,
+            "filename": file.filename,
+            "word_count": DocumentParser.get_word_count(text),
+            "message": "Manuscript uploaded successfully"
+        }
+    except Exception as e:
+        print(f"Error parsing document: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Error parsing document: {str(e)}")
+
+
+@app.post("/bible/extract/{manuscript_id}")
+async def extract_bible(manuscript_id: str):
+    """
+    Extract Series Bible from uploaded manuscript.
+    
+    Args:
+        manuscript_id: ID of uploaded manuscript
+        
+    Returns:
+        Series Bible data
+    """
+    if manuscript_id not in manuscripts_storage:
+        raise HTTPException(status_code=404, detail="Manuscript not found")
+    
+    manuscript_text = manuscripts_storage[manuscript_id]
+    
+    try:
+        # Extract Bible
+        bible = bible_manager.execute(
+            manuscript_text=manuscript_text,
+            manuscript_id=manuscript_id
+        )
+        
+        # Store Bible
+        bibles_storage[manuscript_id] = bible
+        
+        return {
+            "manuscript_id": manuscript_id,
+            "bible": bible.to_dict(),
+            "stats": {
+                "characters": len(bible.characters),
+                "locations": len(bible.locations),
+                "timeline_events": len(bible.timeline),
+                "objects": len(bible.objects)
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error extracting Bible: {str(e)}")
+
+
+@app.get("/bible/{manuscript_id}")
+async def get_bible(manuscript_id: str):
+    """Get Series Bible for a manuscript"""
+    if manuscript_id not in bibles_storage:
+        raise HTTPException(status_code=404, detail="Bible not found")
+    
+    bible = bibles_storage[manuscript_id]
+    return {"bible": bible.to_dict()}
+
+
+@app.put("/bible/{manuscript_id}")
+async def update_bible(manuscript_id: str, bible_data: dict):
+    """
+    Update Series Bible (after user review/edit).
+    
+    Args:
+        manuscript_id: ID of manuscript
+        bible_data: Updated Bible data
+    """
+    try:
+        # Validate and update
+        bible = SeriesBible.from_dict(bible_data)
+        bibles_storage[manuscript_id] = bible
+        
+        return {
+            "message": "Bible updated successfully",
+            "bible": bible.to_dict()
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Error updating Bible: {str(e)}")
+
+
+# ============================================================================
+# STAGED REVIEW ENDPOINTS (New workflow - run agents one at a time)
+# ============================================================================
+
+@app.post("/review/{manuscript_id}/agent/{agent_name}")
+async def review_single_agent(manuscript_id: str, agent_name: str):
+    """
+    Run a single review agent on the manuscript.
+    
+    Args:
+        manuscript_id: Manuscript ID
+        agent_name: Agent to run (consistency, developmental, prose, grammar, proofreading)
+    
+    Returns:
+        Issues found by that specific agent
+    """
+    # Validate agent name
+    valid_agents = ["consistency", "developmental", "prose", "grammar", "proofreading"]
+    if agent_name not in valid_agents:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Invalid agent name. Must be one of: {', '.join(valid_agents)}"
+        )
+    
+    # Check if manuscript and bible exist
+    if manuscript_id not in manuscripts_storage:
+        raise HTTPException(status_code=404, detail="Manuscript not found")
+    
+    if manuscript_id not in bibles_storage:
+        raise HTTPException(status_code=404, detail="Series Bible not found. Extract Bible first.")
+    
+    try:
+        from core.llm_client import LLMClient
+        from agents.consistency_agent import ConsistencyAgent
+        from agents.developmental_agent import DevelopmentalReviewAgent
+        from agents.prose_quality_agent import ProseQualityAgent
+        from agents.grammar_agent import GrammarAgent
+        from agents.proofreading_agent import ProofreadingAgent
+        
+        manuscript_text = manuscripts_storage[manuscript_id]
+        bible = bibles_storage[manuscript_id]
+        llm = LLMClient()
+        
+        # Map agent names to classes
+        agent_map = {
+            "consistency": ConsistencyAgent(llm),
+            "developmental": DevelopmentalReviewAgent(llm),
+            "prose": ProseQualityAgent(llm),
+            "grammar": GrammarAgent(llm),
+            "proofreading": ProofreadingAgent(llm)
+        }
+        
+        # Run the selected agent (synchronous, not async)
+        agent = agent_map[agent_name]
+        issues = agent.execute(manuscript_text, bible)
+        
+        # Store results
+        if manuscript_id not in agent_reviews_storage:
+            agent_reviews_storage[manuscript_id] = {}
+        
+        agent_reviews_storage[manuscript_id][agent_name] = {
+            "issues": [issue.to_dict() for issue in issues],
+            "completed": True,
+            "fixes_applied": 0
+        }
+        
+        return {
+            "agent": agent_name,
+            "total_issues": len(issues),
+            "issues": [issue.to_dict() for issue in issues]
+        }
+        
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Agent review failed: {str(e)}")
+
+
+@app.post("/edit/{manuscript_id}/agent/{agent_name}")
+async def apply_agent_fixes(manuscript_id: str, agent_name: str, request: dict):
+    """
+    Apply selected fixes from a specific agent to the manuscript.
+    
+    Args:
+        manuscript_id: Manuscript ID
+        agent_name: Agent name
+        request: { "issue_indices": [0, 2, 5] }
+    
+    Returns:
+        Updated manuscript and count of fixes applied
+    """
+    if manuscript_id not in manuscripts_storage:
+        raise HTTPException(status_code=404, detail="Manuscript not found")
+    
+    if manuscript_id not in bibles_storage:
+        raise HTTPException(status_code=404, detail="Series Bible not found")
+    
+    if manuscript_id not in agent_reviews_storage or agent_name not in agent_reviews_storage[manuscript_id]:
+        raise HTTPException(status_code=404, detail=f"No review results found for agent: {agent_name}")
+    
+    try:
+        from agents.selective_editor_agent import SelectiveEditorAgent
+        from core.issue import Issue
+        from core.llm_client import LLMClient
+        
+        manuscript_text = manuscripts_storage[manuscript_id]
+        bible = bibles_storage[manuscript_id]
+        issue_indices = request.get("issue_indices", [])
+        
+        # Get issues for this agent
+        agent_issues_dict = agent_reviews_storage[manuscript_id][agent_name]["issues"]
+        
+        # Filter to selected issues and convert back to Issue objects
+        selected_issues = []
+        for idx in issue_indices:
+            if idx < len(agent_issues_dict):
+                issue_dict = agent_issues_dict[idx]
+                selected_issues.append(Issue(**issue_dict))
+        
+        # Apply fixes using SelectiveEditorAgent.execute() method
+        llm = LLMClient()
+        editor = SelectiveEditorAgent(llm)
+        result = editor.execute(
+            manuscript_text=manuscript_text,
+            selected_issues=selected_issues
+        )
+        
+        edited_text = result["edited_text"]
+        
+        # CRITICAL: Update the stored manuscript with edited version
+        manuscripts_storage[manuscript_id] = edited_text
+        
+        # Track fixes applied
+        agent_reviews_storage[manuscript_id][agent_name]["fixes_applied"] = result["fixes_applied"]
+        
+        return {
+            "edited_text": edited_text,
+            "fixes_applied": result["fixes_applied"],
+            "agent": agent_name,
+            "change_log": result.get("change_log", [])
+        }
+        
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Edit failed: {str(e)}")
+
+
+@app.get("/manuscript/{manuscript_id}")
+async def get_manuscript(manuscript_id: str):
+    """
+    Get the current manuscript text (possibly edited).
+    
+    Returns:
+        Current manuscript text
+    """
+    if manuscript_id not in manuscripts_storage:
+        raise HTTPException(status_code=404, detail="Manuscript not found")
+    
+    return {
+        "manuscript_id": manuscript_id,
+        "text": manuscripts_storage[manuscript_id],
+        "word_count": len(manuscripts_storage[manuscript_id].split())
+    }
+
+
+@app.get("/review/{manuscript_id}/status")
+async def get_review_status(manuscript_id: str):
+    """
+    Get the status of all review stages for a manuscript.
+    
+    Returns:
+        Status of each agent (completed, fixes_applied, etc.)
+    """
+    if manuscript_id not in agent_reviews_storage:
+        return {
+            "manuscript_id": manuscript_id,
+            "stages": {}
+        }
+    
+    return {
+        "manuscript_id": manuscript_id,
+        "stages": agent_reviews_storage[manuscript_id]
+    }
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

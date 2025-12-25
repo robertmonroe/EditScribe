@@ -1,0 +1,14 @@
+{
+  "manuscript_id": "9066bc79-605a-4276-9060-6815766674b0",
+  "current_stage": "copy",
+  "acquisitions_status": "completed",
+  "developmental_status": "completed",
+  "line_status": "completed",
+  "copy_status": "not_started",
+  "proof_status": "not_started",
+  "cold_read_status": "not_started",
+  "started_at": "2025-12-24T00:07:25.588887",
+  "completed_at": null,
+  "total_issues_found": 1,
+  "total_fixes_applied": 0
+}

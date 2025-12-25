@@ -1,0 +1,95 @@
+﻿"""
+EditScribe API - Professional Publishing Workflow
+Follows industry-standard linear editing (big to small)
+"""
+
+from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
+import uuid
+import tempfile
+import os
+
+from core.llm_client import LLMClient
+from core.document_parser import DocumentParser
+from core.style_sheet import StyleSheet
+from core.managing_editor import ManagingEditor, EditingStage
+from core.issue import Issue
+from core.project_manager import ProjectManager
+
+# Import professional agents
+from agents.acquisitions_editor import AcquisitionsEditor
+from agents.developmental_editor import DevelopmentalEditor
+from agents.line_editor import LineEditor
+from agents.copy_editor import CopyEditor
+from agents.proofreader import Proofreader
+from agents.selective_editor_agent import SelectiveEditorAgent
+
+app = FastAPI(title="EditScribe API - Professional Workflow", version="2.0.0")
+
+# CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Initialize
+llm_client = LLMClient()
+managing_editor = ManagingEditor()
+project_manager = ProjectManager()
+
+# Storage (in-memory for now)
+manuscripts_storage = {}
+style_sheets_storage = {}
+stage_results_storage = {}
+
+@app.get("/")
+async def root():
+    """Health check"""
+    return {"status": "ok", "service": "EditScribe API v2.0 - Professional Workflow"}
+
+
+@app.post("/upload")
+async def upload_manuscript(file: UploadFile = File(...)):
+    """Upload manuscript and start workflow"""
+    manuscript_id = str(uuid.uuid4())
+    
+    temp_dir = tempfile.gettempdir()
+    temp_path = os.path.join(temp_dir, f"{manuscript_id}_{file.filename}")
+    
+    try:
+        with open(temp_path, "wb") as f:
+            content = await file.read()
+            f.write(content)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error saving file: {str(e)}")
+    
+    try:
+        text = DocumentParser.parse(temp_path)
+        manuscripts_storage[manuscript_id] = text
+        
+        style_sheet = StyleSheet(
+            manuscript_id=manuscript_id,
+            title=file.filename.replace(".docx", ""),
+            word_count=len(text.split())
+        )
+        style_sheets_storage[manuscript_id] = style_sheet
+        
+        # Create project structure on disk
+        project_manager.create_project(manuscript_id, file.filename.replace(".docx", ""), text)
+        
+        workflow = managing_editor.start_workflow(manuscript_id)
+        
+        return {
+            "manuscript_id": manuscript_id,
+            "filename": file.filename,
+            "word_count": style_sheet.word_count,
+            "workflow_status": workflow.to_dict(),
+    can_run, reason = managing_editor.can_run_stage(manuscript_id, EditingStage.ACQUISITIONS)
+    if not can_run:
+        raise HTTPException(status_code=400, detail=reason)
+    
+    if manuscript_id not in manuscripts_storage:
+        raise HTTPException(status_code=404, detail="Manuscript not found")

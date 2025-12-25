@@ -1,0 +1,200 @@
+[
+  {
+    "id": 1,
+    "stage": "line",
+    "severity": "major",
+    "category": "voice",
+    "location": "Chapter 2, paragraph 1",
+    "original_text": "Souuy Til.ia who was p,shing her' and demnitely away frou T,sana who walMed alongside theu",
+    "description": "Inconsistent narrative voice and character naming. The text shifts from standard English in Chapter 1 to a corrupted character set in Chapter 2, changing 'Mommy Silvia' to 'Souuy Til.ia' and 'Susana' to 'T,sana.' This destroys the established authorial voice and reader immersion.",
+    "suggestion": "Standardize all character names and orthography across the entire manuscript to maintain a professional and consistent voice.",
+    "bible_conflict": false
+  },
+  {
+    "id": 2,
+    "stage": "line",
+    "severity": "moderate",
+    "category": "voice",
+    "location": "Chapter 1, paragraph 42",
+    "original_text": "Silvia's resolve wavered for just a moment.",
+    "description": "POV slip from third-person limited to omniscient. The story is told through Angel Baby\u2019s perspective and observations; the dog cannot know the internal state of Silvia\u2019s 'resolve.'",
+    "suggestion": "Show Silvia\u2019s hesitation through action that Angel Baby can see, such as: 'Mommy Silvia paused, looking at the sweater and then at Angel Baby\u2019s sad eyes.'",
+    "bible_conflict": false
+  },
+  {
+    "id": 3,
+    "stage": "line",
+    "severity": "minor",
+    "category": "voice",
+    "location": "Chapter 1, paragraph 18",
+    "original_text": "The sweater unfurled like a tiny banner of doom",
+    "description": "Jarring tone shift. The manuscript establishes a 'cozy/sweet' tone (cinnamon toast, golden stripes, velvety ears), but 'banner of doom' introduces a melodramatic/epic tone that feels out of place in a gentle children's book.",
+    "suggestion": "Soften the metaphor to better match the established tone, such as: 'The sweater unfurled like a fuzzy pink trap.'",
+    "bible_conflict": false
+  },
+  {
+    "id": 4,
+    "stage": "line",
+    "severity": "major",
+    "category": "voice",
+    "location": "Throughout Manuscript",
+    "original_text": "Angel Baby's Lat little nose twitched... showing ox her prize... Pelds of Lowers.",
+    "description": "Weak authorial voice caused by pervasive character substitution errors (OCR/Encoding issues). Using 'Lat' for 'flat,' 'ox' for 'off,' and 'Pelds' for 'fields' makes the voice feel unpolished and distracts from the rhythmic, 'read-aloud' quality required for children's literature.",
+    "suggestion": "Conduct a thorough line edit to fix character replacements (specifically L/f, P/F, W/I, and sI/squ) to restore the intended sweet and whimsical voice.",
+    "bible_conflict": false
+  },
+  {
+    "id": 5,
+    "stage": "line",
+    "severity": "minor",
+    "category": "voice",
+    "location": "Chapter 1, paragraph 33",
+    "original_text": "Angel Baby's answer was written clearly in her wrinkled little faceC absolutely not.",
+    "description": "Inconsistent narrative distance. The narrator suddenly interprets the dog's thoughts with a level of snark ('absolutely not') that is slightly more cynical than the innocent, curious voice established in the opening paragraphs.",
+    "suggestion": "Maintain the innocent tone by describing the physical resistance more and the 'attitude' less, or lean more consistently into the dog's internal monologue.",
+    "bible_conflict": false
+  },
+  {
+    "id": 6,
+    "stage": "line",
+    "severity": "minor",
+    "category": "voice",
+    "location": "Throughout the manuscript",
+    "original_text": "red sweater with white snowLakes",
+    "description": "The repetitive use of the full descriptive phrase 'red sweater with white snowflakes' (appearing nearly ten times) creates a mechanical rhythm that weakens the authorial voice. While repetition is common in children's literature, here it feels like a placeholder rather than a stylistic choice.",
+    "suggestion": "Vary the descriptions. Use 'her festive knit,' 'the warm red wool,' or simply 'her sweater' once the item has been established, to keep the prose fluid.",
+    "bible_conflict": false
+  },
+  {
+    "id": 7,
+    "stage": "line",
+    "severity": "moderate",
+    "category": "voice",
+    "location": "Middle of the manuscript",
+    "original_text": "The sweater wasn't keeping her from having fun. The sweater was her ticket to the fun.",
+    "description": "The narrative voice shifts from a sensory, puppy-centric perspective to a highly abstract, adult-sounding metaphor ('ticket to the fun'). This breaks the 'dog's eye view' established by the smells and sounds of the market.",
+    "suggestion": "Keep the realization grounded in sensory experience. For example: 'With her sweater on, the cold couldn't stop her. She could stay in the snow as long as the children did.'",
+    "bible_conflict": false
+  },
+  {
+    "id": 8,
+    "stage": "line",
+    "severity": "minor",
+    "category": "voice",
+    "location": "Near the end of the manuscript",
+    "original_text": "The sweater isn't to bother you. It's so you can come with us everywhere, even when it's cold and snowy.",
+    "description": "The tone becomes overly didactic (preachy). Having a character explicitly state the 'moral' of the story to the dog breaks the immersive, cozy tone of the scene and feels like the author speaking through the character.",
+    "suggestion": "Let the dialogue feel more natural for a child speaking to a pet. Susana could say, 'See, Angel Baby? Now you can play all day!' This conveys the same message without sounding like a lecture.",
+    "bible_conflict": false
+  },
+  {
+    "id": 9,
+    "stage": "line",
+    "severity": "minor",
+    "category": "voice",
+    "location": "Paragraph starting with 'Angel Baby looked from the terrier...'",
+    "original_text": "Uer chest swelled with an unfamiliar but wonderful feeling. She wasn't strange or sillyNshe was part of something special.",
+    "description": "The internal monologue here attributes very complex, human social anxieties (feeling 'strange or silly' vs. 'inclusive') to the dog. This pushes the voice too far into human psychology, losing the charming simplicity of the animal POV.",
+    "suggestion": "Focus on the dog's instinctual reaction to the 'pack.' For example: 'She saw the other dogs in their coats and wagged her tail. She was a winter dog, just like them.'",
+    "bible_conflict": false
+  },
+  {
+    "id": 10,
+    "stage": "line",
+    "severity": "minor",
+    "category": "wordiness",
+    "location": "Paragraph 3",
+    "original_text": "waiting for the familiar shiver that always came when she spent too long outside in winter.",
+    "description": "Redundant phrasing; 'familiar' implies it 'always' happens.",
+    "suggestion": "waiting for the familiar shiver of a long winter walk.",
+    "bible_conflict": false
+  },
+  {
+    "id": 11,
+    "stage": "line",
+    "severity": "minor",
+    "category": "wordiness",
+    "location": "Paragraph 3",
+    "original_text": "when her teeth would chatter after just a few minutes, when her little body would tremble",
+    "description": "Wordy 'would' construction and repetitive structure.",
+    "suggestion": "when her teeth chattered and her body trembled",
+    "bible_conflict": false
+  },
+  {
+    "id": 12,
+    "stage": "line",
+    "severity": "minor",
+    "category": "wordiness",
+    "location": "Paragraph 6",
+    "original_text": "The soft fabric of her sweater hugged her back and sides, keeping the cold air from reaching her skin.",
+    "description": "Overwriting; 'hugged her back and sides' is implied by the sweater fitting, and the second half is a wordy explanation of what a sweater does.",
+    "suggestion": "The sweater hugged her, shielding her skin from the cold.",
+    "bible_conflict": false
+  },
+  {
+    "id": 13,
+    "stage": "line",
+    "severity": "minor",
+    "category": "wordiness",
+    "location": "Paragraph 11",
+    "original_text": "Angel Baby's tail began to wag\u2014slowly at Rrst, then faster.",
+    "description": "Weak 'began to' construction.",
+    "suggestion": "Angel Baby\u2019s tail wagged, slowly at first, then faster.",
+    "bible_conflict": false
+  },
+  {
+    "id": 14,
+    "stage": "line",
+    "severity": "minor",
+    "category": "wordiness",
+    "location": "Paragraph 19",
+    "original_text": "The heart of the holiday market opened up before them like a storybook illustration come to life.",
+    "description": "Wordy clich\u00e9 and redundant 'up before them'.",
+    "suggestion": "The market\u2019s heart opened like a storybook illustration.",
+    "bible_conflict": false
+  },
+  {
+    "id": 15,
+    "stage": "line",
+    "severity": "minor",
+    "category": "wordiness",
+    "location": "Multiple locations",
+    "original_text": "red sweater with white snowLakes",
+    "description": "Extreme repetition. This specific seven-word phrase is used nearly ten times in the manuscript.",
+    "suggestion": "Vary the description: use 'her sweater,' 'the festive knit,' or 'the red garment' after the initial mention.",
+    "bible_conflict": false
+  },
+  {
+    "id": 16,
+    "stage": "line",
+    "severity": "minor",
+    "category": "wordiness",
+    "location": "Paragraph 24",
+    "original_text": "She accepted it delicately, her tail wagging faster now.",
+    "description": "Weak verb/adverb combo.",
+    "suggestion": "She accepted it delicately, her tail a blur.",
+    "bible_conflict": false
+  },
+  {
+    "id": 17,
+    "stage": "line",
+    "severity": "minor",
+    "category": "wordiness",
+    "location": "Paragraph 35",
+    "original_text": "The winter sun was beginning to dip lower in the sky",
+    "description": "Wordy 'was beginning to' and redundant 'in the sky'.",
+    "suggestion": "The winter sun dipped lower,",
+    "bible_conflict": false
+  },
+  {
+    "id": 18,
+    "stage": "line",
+    "severity": "minor",
+    "category": "wordiness",
+    "location": "Paragraph 40",
+    "original_text": "It didn't feel restrictive or uncomfortable. It felt like protection. ?ike love.",
+    "description": "Overwriting the emotional beat with abstract nouns.",
+    "suggestion": "It felt less like a restriction and more like a warm embrace.",
+    "bible_conflict": false
+  }
+]

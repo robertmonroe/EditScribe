@@ -1,0 +1,28 @@
+{
+  "manuscript_id": "584d5f4a-ab99-458a-b6f6-457a06ef4eec",
+  "title": "manuscript_original.md",
+  "author": "",
+  "genre": "",
+  "target_audience": "",
+  "word_count": 8645,
+  "synopsis": "",
+  "house_style_guide": "Chicago Manual of Style, 17th Edition",
+  "custom_rules": {
+    "spelling_preferences": {},
+    "capitalization_rules": {},
+    "number_style": "spell_out_under_100",
+    "oxford_comma": true,
+    "em_dash_style": "no_spaces",
+    "quote_style": "double",
+    "time_format": "12_hour",
+    "date_format": "month_day_year"
+  },
+  "characters": [],
+  "locations": [],
+  "objects": [],
+  "timeline": [],
+  "preferred_terms": {},
+  "editor_notes": "",
+  "created_at": "2025-12-24T01:01:57.243964",
+  "updated_at": "2025-12-24T01:01:57.243979"
+}

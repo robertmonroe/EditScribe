@@ -1,0 +1,468 @@
+"""
+EditScribe API - Professional Publishing Workflow
+Follows industry-standard linear editing (big to small)
+"""
+
+from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
+import uuid
+import tempfile
+import os
+
+from core.llm_client import LLMClient
+from core.document_parser import DocumentParser
+from core.style_sheet import StyleSheet
+from core.managing_editor import ManagingEditor, EditingStage
+from core.issue import Issue
+from core.project_manager import ProjectManager
+
+# Import professional agents
+from agents.acquisitions_editor import AcquisitionsEditor
+from agents.developmental_editor import DevelopmentalEditor
+from agents.line_editor import LineEditor
+from agents.copy_editor import CopyEditor
+from agents.proofreader import Proofreader
+from agents.selective_editor_agent import SelectiveEditorAgent
+
+app = FastAPI(title="EditScribe API - Professional Workflow", version="2.0.0")
+
+# CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Initialize
+llm_client = LLMClient()
+managing_editor = ManagingEditor()
+project_manager = ProjectManager()
+
+# Storage (in-memory for now)
+manuscripts_storage = {}
+style_sheets_storage = {}
+stage_results_storage = {}
+
+@app.get("/")
+async def root():
+    """Health check"""
+    return {"status": "ok", "service": "EditScribe API v2.0 - Professional Workflow"}
+
+
+@app.post("/upload")
+async def upload_manuscript(file: UploadFile = File(...)):
+    """Upload manuscript and start workflow"""
+    manuscript_id = str(uuid.uuid4())
+    
+    temp_dir = tempfile.gettempdir()
+    temp_path = os.path.join(temp_dir, f"{manuscript_id}_{file.filename}")
+    
+    try:
+        with open(temp_path, "wb") as f:
+            content = await file.read()
+            f.write(content)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error saving file: {str(e)}")
+    
+    try:
+        text = DocumentParser.parse(temp_path)
+        manuscripts_storage[manuscript_id] = text
+        
+        style_sheet = StyleSheet(
+            manuscript_id=manuscript_id,
+            title=file.filename.replace(".docx", ""),
+            word_count=len(text.split())
+        )
+        style_sheets_storage[manuscript_id] = style_sheet
+        
+        # Create project structure on disk
+        project_manager.create_project(manuscript_id, file.filename.replace(".docx", ""), text)
+        
+        workflow = managing_editor.start_workflow(manuscript_id)
+        
+        return {
+            "manuscript_id": manuscript_id,
+            "filename": file.filename,
+            "word_count": style_sheet.word_count,
+            "workflow_status": workflow.to_dict(),
+    can_run, reason = managing_editor.can_run_stage(manuscript_id, EditingStage.ACQUISITIONS)
+    if not can_run:
+        raise HTTPException(status_code=400, detail=reason)
+    
+    if manuscript_id not in manuscripts_storage:
+        raise HTTPException(status_code=404, detail="Manuscript not found")
+    
+    try:
+        manuscript_text = manuscripts_storage[manuscript_id]
+        style_sheet = style_sheets_storage[manuscript_id]
+        
+        agent = AcquisitionsEditor(llm_client)
+        result = agent.execute(manuscript_text, style_sheet)
+        
+        if manuscript_id not in stage_results_storage:
+            stage_results_storage[manuscript_id] = {}
+        
+        stage_results_storage[manuscript_id]["acquisitions"] = {
+            "report": result,
+            "issues": []
+        }
+        
+        # Save report to disk
+        project_manager.save_acquisitions_report(manuscript_id, result)
+        project_manager.save_manuscript_version(manuscript_id, "acquisitions", manuscript_text)
+        
+        workflow = managing_editor.mark_stage_complete(
+            manuscript_id, 
+            EditingStage.ACQUISITIONS,
+            issues_found=0,
+            fixes_applied=0
+        )
+        
+        # Save workflow status
+        project_manager.save_workflow_status(manuscript_id, workflow.to_dict())
+        
+        return {
+            "stage": "acquisitions",
+            "status": "complete",
+            "report": result,
+            "next_stage": workflow.current_stage.value if workflow.current_stage else None
+        }
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Acquisitions failed: {str(e)}")
+
+
+@app.post("/workflow/{manuscript_id}/developmental")
+async def run_developmental(manuscript_id: str):
+    """Run Developmental Editor (Stage 2)"""
+    can_run, reason = managing_editor.can_run_stage(manuscript_id, EditingStage.DEVELOPMENTAL)
+    if not can_run:
+        raise HTTPException(status_code=400, detail=reason)
+    
+    if manuscript_id not in manuscripts_storage:
+        raise HTTPException(status_code=404, detail="Manuscript not found")
+    
+    try:
+        manuscript_text = manuscripts_storage[manuscript_id]
+        style_sheet = style_sheets_storage[manuscript_id]
+        
+        agent = DevelopmentalEditor(llm_client)
+        issues = agent.execute(manuscript_text, style_sheet)
+        
+        if manuscript_id not in stage_results_storage:
+            stage_results_storage[manuscript_id] = {}
+        
+        stage_results_storage[manuscript_id]["developmental"] = {
+            "issues": [issue.to_dict() for issue in issues],
+            "fixes_applied": 0
+        }
+        
+        # Save report to disk
+        project_manager.save_stage_report(manuscript_id, "developmental", [issue.to_dict() for issue in issues])
+        
+        return {
+            "stage": "developmental",
+            "total_issues": len(issues),
+            "issues": [issue.to_dict() for issue in issues]
+        }
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Developmental failed: {str(e)}")
+
+
+@app.post("/workflow/{manuscript_id}/line")
+async def run_line(manuscript_id: str):
+    """Run Line Editor (Stage 3)"""
+    can_run, reason = managing_editor.can_run_stage(manuscript_id, EditingStage.LINE)
+    if not can_run:
+        raise HTTPException(status_code=400, detail=reason)
+    
+    if manuscript_id not in manuscripts_storage:
+        raise HTTPException(status_code=404, detail="Manuscript not found")
+    
+    try:
+        manuscript_text = manuscripts_storage[manuscript_id]
+        style_sheet = style_sheets_storage[manuscript_id]
+        
+        agent = LineEditor(llm_client)
+        issues = agent.execute(manuscript_text, style_sheet)
+        
+        if manuscript_id not in stage_results_storage:
+            stage_results_storage[manuscript_id] = {}
+        
+        stage_results_storage[manuscript_id]["line"] = {
+            "issues": [issue.to_dict() for issue in issues],
+            "fixes_applied": 0
+        }
+        
+        # Save report to disk
+        project_manager.save_stage_report(manuscript_id, "line", [issue.to_dict() for issue in issues])
+        
+        return {
+            "stage": "line",
+            "total_issues": len(issues),
+            "issues": [issue.to_dict() for issue in issues]
+        }
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Line editing failed: {str(e)}")
+
+
+@app.post("/workflow/{manuscript_id}/copy")
+async def run_copy(manuscript_id: str):
+    """Run Copy Editor (Stage 4)"""
+    can_run, reason = managing_editor.can_run_stage(manuscript_id, EditingStage.COPY)
+    if not can_run:
+        raise HTTPException(status_code=400, detail=reason)
+    
+    if manuscript_id not in manuscripts_storage:
+        raise HTTPException(status_code=404, detail="Manuscript not found")
+    
+    try:
+        manuscript_text = manuscripts_storage[manuscript_id]
+        style_sheet = style_sheets_storage[manuscript_id]
+        
+        agent = CopyEditor(llm_client)
+        issues = agent.execute(manuscript_text, style_sheet)
+        
+        if manuscript_id not in stage_results_storage:
+            stage_results_storage[manuscript_id] = {}
+        
+        stage_results_storage[manuscript_id]["copy"] = {
+            "issues": [issue.to_dict() for issue in issues],
+            "fixes_applied": 0
+        }
+        
+        # Save report to disk
+        project_manager.save_stage_report(manuscript_id, "copy", [issue.to_dict() for issue in issues])
+        
+        return {
+            "stage": "copy",
+            "total_issues": len(issues),
+            "issues": [issue.to_dict() for issue in issues]
+        }
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Copyediting failed: {str(e)}")
+
+
+@app.post("/workflow/{manuscript_id}/proof")
+async def run_proof(manuscript_id: str):
+    """Run Proofreader (Stage 5)"""
+    can_run, reason = managing_editor.can_run_stage(manuscript_id, EditingStage.PROOF)
+    if not can_run:
+        raise HTTPException(status_code=400, detail=reason)
+    
+    if manuscript_id not in manuscripts_storage:
+        raise HTTPException(status_code=404, detail="Manuscript not found")
+    
+    try:
+        manuscript_text = manuscripts_storage[manuscript_id]
+        style_sheet = style_sheets_storage[manuscript_id]
+        
+        agent = Proofreader(llm_client)
+        issues = agent.execute(manuscript_text, style_sheet)
+        
+        if manuscript_id not in stage_results_storage:
+            stage_results_storage[manuscript_id] = {}
+        
+        stage_results_storage[manuscript_id]["proof"] = {
+            "issues": [issue.to_dict() for issue in issues],
+            "fixes_applied": 0
+        }
+        
+        # Save report to disk
+        project_manager.save_stage_report(manuscript_id, "proof", [issue.to_dict() for issue in issues])
+        
+        return {
+            "stage": "proof",
+            "total_issues": len(issues),
+            "issues": [issue.to_dict() for issue in issues]
+        }
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Proofreading failed: {str(e)}")
+
+
+@app.post("/workflow/{manuscript_id}/{stage}/apply-fixes")
+async def apply_fixes(manuscript_id: str, stage: str, request: dict):
+    """Apply selected fixes for a stage"""
+    if manuscript_id not in manuscripts_storage:
+        raise HTTPException(status_code=404, detail="Manuscript not found")
+    
+    if manuscript_id not in stage_results_storage or stage not in stage_results_storage[manuscript_id]:
+        raise HTTPException(status_code=404, detail=f"No results for stage: {stage}")
+    
+    try:
+        manuscript_text = manuscripts_storage[manuscript_id]
+        issue_indices = request.get("issue_indices", [])
+        
+        stage_data = stage_results_storage[manuscript_id][stage]
+        all_issues = stage_data["issues"]
+        
+        selected_issues = []
+        for idx in issue_indices:
+            if idx < len(all_issues):
+                selected_issues.append(Issue(**all_issues[idx]))
+        
+        llm = LLMClient()
+        editor = SelectiveEditorAgent(llm)
+        result = editor.execute(
+            manuscript_text=manuscript_text,
+            selected_issues=selected_issues
+        )
+        
+        edited_text = result["edited_text"]
+        manuscripts_storage[manuscript_id] = edited_text
+        stage_data["fixes_applied"] = result["fixes_applied"]
+        
+        # Save updated manuscript version
+        project_manager.save_manuscript_version(manuscript_id, f"{stage}_fixes_applied", edited_text)
+        
+        stage_enum = EditingStage(stage)
+        workflow = managing_editor.mark_stage_complete(
+            manuscript_id,
+            stage_enum,
+            issues_found=len(all_issues),
+            fixes_applied=result["fixes_applied"]
+        )
+        
+        # Save workflow status
+        project_manager.save_workflow_status(manuscript_id, workflow.to_dict())
+        
+        return {
+            "edited_text": edited_text,
+            "fixes_applied": result["fixes_applied"],
+            "stage": stage,
+            "next_stage": workflow.current_stage.value if workflow.current_stage else None,
+            "change_log": result.get("change_log", [])
+        }
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Fix application failed: {str(e)}")
+
+
+@app.get("/workflow/{manuscript_id}/status")
+async def get_workflow_status(manuscript_id: str):
+    """Get current workflow status"""
+    workflow = managing_editor.get_workflow_status(manuscript_id)
+    if not workflow:
+        raise HTTPException(status_code=404, detail="Workflow not found")
+    
+    return {
+        "workflow": workflow.to_dict(),
+        "report": managing_editor.generate_workflow_report(manuscript_id)
+    }
+
+
+@app.get("/manuscript/{manuscript_id}")
+async def get_manuscript(manuscript_id: str):
+    """Get current manuscript text"""
+    if manuscript_id not in manuscripts_storage:
+        raise HTTPException(status_code=404, detail="Manuscript not found")
+    
+    return {
+        "manuscript_id": manuscript_id,
+        "text": manuscripts_storage[manuscript_id],
+        "word_count": len(manuscripts_storage[manuscript_id].split())
+    }
+
+
+@app.get("/style-sheet/{manuscript_id}")
+async def get_style_sheet(manuscript_id: str):
+    """Get Style Sheet"""
+    if manuscript_id not in style_sheets_storage:
+        raise HTTPException(status_code=404, detail="Style Sheet not found")
+    
+    return {"style_sheet": style_sheets_storage[manuscript_id].to_dict()}
+
+
+@app.put("/style-sheet/{manuscript_id}")
+async def update_style_sheet(manuscript_id: str, style_sheet_data: dict):
+    """Update Style Sheet"""
+    if manuscript_id not in style_sheets_storage:
+        raise HTTPException(status_code=404, detail="Style Sheet not found")
+    
+    try:
+        style_sheet = style_sheets_storage[manuscript_id]
+        
+        if "title" in style_sheet_data:
+            style_sheet.title = style_sheet_data["title"]
+        if "genre" in style_sheet_data:
+            style_sheet.genre = style_sheet_data["genre"]
+        
+        # Save to disk
+        project_manager.save_style_sheet(manuscript_id, style_sheet.to_dict())
+        
+        return {"status": "updated", "style_sheet": style_sheet.to_dict()}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update Style Sheet: {str(e)}")
+
+
+@app.get("/projects")
+async def list_projects():
+    """List all projects"""
+    projects = project_manager.list_projects()
+    return {"projects": projects}
+
+
+@app.get("/projects/{manuscript_id}")
+async def get_project(manuscript_id: str):
+    """Get complete project data"""
+    project = project_manager.load_project(manuscript_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    return project
+
+
+@app.get("/projects/{manuscript_id}/complete-report")
+async def get_complete_report(manuscript_id: str):
+    """Generate and return complete editorial report"""
+    report = project_manager.generate_complete_report(manuscript_id)
+    return {"report": report}
+
+
+
+@app.get("/manuscript/{manuscript_id}/version/{version_name}")
+async def get_manuscript_version(manuscript_id: str, version_name: str):
+    """Get a specific version of the manuscript"""
+    from pathlib import Path
+    
+    project_dir = Path(f"backend/projects/{manuscript_id}")
+    
+    # Handle special cases
+    if version_name == "original":
+        version_file = project_dir / "manuscript" / "original.txt"
+    elif version_name == "current":
+        version_file = project_dir / "manuscript" / "current.txt"
+    else:
+        version_file = project_dir / "manuscript" / "versions" / f"{version_name}.txt"
+    
+    if not version_file.exists():
+        raise HTTPException(status_code=404, detail=f"Version '{version_name}' not found")
+    
+    try:
+        with open(version_file, "r", encoding="utf-8") as f:
+            text = f.read()
+        
+        return {
+            "manuscript_id": manuscript_id,
+            "version": version_name,
+            "text": text,
+            "word_count": len(text.split())
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to read version: {str(e)}")
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -1,0 +1,68 @@
+[
+  {
+    "id": 1,
+    "stage": "developmental",
+    "severity": "major",
+    "category": "plot",
+    "location": "Chapter 2, Scene 6 vs Chapter 3, Scene 1",
+    "original_text": "A cat, lean and wiry with mismatched eyes... (Ch 2) vs Pixel perched comfortably on his head, a tiny voice buzzing in his ear... her antennae twitching. (Ch 3)",
+    "description": "Major character inconsistency: Pixel is introduced as a stray cat in Chapter 2, but in Chapter 3, she is described as having antennae, chirping, and being small enough to sit on a pig's head, implying she is now an insect or a tiny alien creature.",
+    "suggestion": "Decide on Pixel's species and physical attributes and maintain consistency throughout the manuscript.",
+    "bible_conflict": false
+  },
+  {
+    "id": 2,
+    "stage": "developmental",
+    "severity": "major",
+    "category": "character arc",
+    "location": "Chapter 3",
+    "original_text": "Pixel's voice, a concentrated hum in Wilbur's ear... Wilbur methodically placed his bishop.",
+    "description": "The protagonist lacks agency. Wilbur does not actually learn or play chess; he simply follows the literal instructions of Pixel. This prevents Wilbur from having a meaningful growth arc as a 'prodigy' because he is essentially a puppet.",
+    "suggestion": "Have Pixel teach Wilbur the logic behind the game earlier, but allow Wilbur to make the critical winning moves himself based on the 'patterns' he observed in Chapter 1.",
+    "bible_conflict": false
+  },
+  {
+    "id": 3,
+    "stage": "developmental",
+    "severity": "major",
+    "category": "plot",
+    "location": "Chapter 2, Scene 2",
+    "original_text": "Each jostle of the truck sent a spray of tomato juice cascading down, splattering his patched-up overalls.",
+    "description": "Logic gap/Continuity: Wilbur is a pig who escapes a farm pen in Chapter 1. In Chapter 2, he is suddenly wearing 'patched-up overalls' and later a 'denim jacket' with no explanation of how a pig acquired or donned human clothing.",
+    "suggestion": "Either remove the clothing descriptions or add a scene where Wilbur finds and struggles to put on clothes to hide his identity.",
+    "bible_conflict": false
+  },
+  {
+    "id": 4,
+    "stage": "developmental",
+    "severity": "major",
+    "category": "plot",
+    "location": "Chapter 1, Scene 3",
+    "original_text": "Then, the word, like a bolt of lightning, struck him. 'Checkmate,' he whispered.",
+    "description": "Logic gap: Wilbur identifies a shadow pattern as a 'chessboard' and knows the word 'checkmate' before he has ever seen the game, heard the word, or left the isolated farm. There is no established source for this specialized knowledge.",
+    "suggestion": "Show Wilbur seeing a chess set in the Farmer's house through a window or hearing a radio broadcast to justify his knowledge of the terminology.",
+    "bible_conflict": false
+  },
+  {
+    "id": 5,
+    "stage": "developmental",
+    "severity": "major",
+    "category": "plot",
+    "location": "Chapter 3, Scene 2",
+    "original_text": "Wilbur placed his knight, the wood of the piece smooth beneath his hoof.",
+    "description": "Physical logic gap: A pig's cloven hooves are anatomically incapable of the fine motor skills required to pick up, move, and 'meticulously place' small chess pieces on a standard board without knocking over other pieces.",
+    "suggestion": "Address the physical challenge of the game. Perhaps Wilbur uses his snout, or the park uses a 'giant' chess set, or Pixel assists physically.",
+    "bible_conflict": false
+  },
+  {
+    "id": 6,
+    "stage": "developmental",
+    "severity": "major",
+    "category": "pacing",
+    "location": "Chapter 3",
+    "original_text": "The camera flashed. Wilbur, the Pig Prodigy, continued his winning streak.",
+    "description": "The escalation from Wilbur's first game to beating a world-renowned Grandmaster (Boris Volkov) happens almost instantaneously. There is no 'middle' to the story where Wilbur struggles, learns, or faces setbacks in the city.",
+    "suggestion": "Expand the second act. Wilbur should face several low-stakes matches and perhaps a loss before facing a Grandmaster.",
+    "bible_conflict": false
+  }
+]

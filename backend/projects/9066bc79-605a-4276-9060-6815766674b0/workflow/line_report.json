@@ -1,0 +1,14 @@
+{
+    "issues": [
+        {
+            "id": 101,
+            "severity": "minor",
+            "category": "grammar",
+            "location": "Line 5",
+            "quote": "Test Quote",
+            "issue": "Test Issue for Ignore",
+            "suggestion": "Ignore me testing",
+            "status": "open"
+        }
+    ]
+}
