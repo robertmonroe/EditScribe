@@ -22,10 +22,11 @@ wheels/
 .pytest_cache/
 .coverage
 htmlcov/
-.venv
-venv/
-ENV/
-env/
+**/.env
+**/.venv
+**/venv
+**/ENV
+**/env
 
 # Node.js
 node_modules/
